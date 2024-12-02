@@ -1,0 +1,139 @@
+{% extends 'admin/navbar.html' %}
+{% block content %}
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
+<style>
+    /* Custom shadow for a projected 3D effect */
+    .projected {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), 
+                    0 15px 30px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        background: #ffffff;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    /* Hover effect to amplify projection */
+    .projected:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3), 
+                    0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .review-card {
+        padding: 20px;
+        margin-bottom: 20px;
+        background: #fefefe;
+    }
+
+    .container-custom {
+        padding: 30px;
+        background: linear-gradient(145deg, #f3f3f3, #ffffff);
+        border-radius: 15px;
+        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.1), 
+                    -8px -8px 16px rgba(255, 255, 255, 0.8);
+    }
+</style>
+
+    <div class="container mt-3" style="padding-top: 40px; min-height: 90vh;">
+        <h2>Pharmacist Details</h2>
+        <!-- Search Section -->
+        <div class="mb-4">
+            <select id="searchBill" class="form-control" style="width: 100%;">
+                <option value="">Search by Name</option>
+                {% for pharmacist in pharmacists %}
+                <option value="{{ pharmacist.id }}">
+                    {{ pharmacist.user_profile.user.username }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        <!-- Table -->
+        <table class="table table-bordered mt-4 projected">
+            <thead class="projected">
+                <tr>
+                    <th>Username</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Email</th>
+                    <th>image</th>
+                    <th>Resume</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="billTableBody">
+                {% for pharmacist in pharmacists %}
+                <tr data-bill-id="{{ pharmacist.id }}" 
+                    >
+                    <td>{{ pharmacist.user_profile.user.username }}</td>
+                    <td>{{ pharmacist.user_profile.user.first_name }}</td>
+                    <td>{{ pharmacist.user_profile.user.last_name }}</td>
+                    <td>{{ pharmacist.user_profile.user.email }}</td>
+                    <td> <a href="{{ pharmacist.resume.url }}">Resume</a></td>
+                    <td><img src="{{ pharmacist.image.url }}" class="img-fluid mb-3" alt="Profile Picture" style="width: 120px; height: 120px;object-fit: contain;"></td>
+                    <td>
+                        {% if pharmacist.user_profile.soft_deletion == True %}
+                        <a href="{% url 'admin_access_pharmacist' pharmacist.id %}">
+                            
+                            <button type="button" class="btn btn-success btn-sm view-history-btn" >
+                                Grand access
+                            </button></a>
+                            {% else %}
+                            <a href="{% url 'admin_restrict_pharmacist' pharmacist.id %}">
+                            <button type="button" class="btn btn-danger btn-sm view-history-btn">
+                                Restrict access
+                            </button></a>
+                            {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No Pharmacists</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2
+            $('#searchBill').select2({
+                placeholder: "Search by Pharmacist name",
+                allowClear: true
+            });
+    
+            // Filter table on selection
+            $('#searchBill').on('change', function() {
+                var selectedValue = $(this).val();
+                
+                if (selectedValue) {
+                    // Hide all rows and show the matching one
+                    $('#billTableBody tr').hide();
+                    $('#billTableBody tr[data-bill-id="' + selectedValue + '"]').show();
+                } else {
+                    // Show all rows if no selection
+                    $('#billTableBody tr').show();
+                }
+            });
+        });
+    </script>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+      <script>
+        {% for msg in messages %}
+        swal({
+        title: "{{msg}}",
+        text: "{{msg.tags}}",
+        icon: "{{msg.tags}}",
+      });
+        {% endfor %}
+       </script>
+</body>
+
+{% endblock %}

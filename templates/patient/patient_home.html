@@ -1,0 +1,110 @@
+{% extends 'patient/patient_navbar.html' %}
+{% block content %}
+{% load static %}
+        <!-- Include Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+
+<!-- Include Select2 JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <body >
+        <div class="container mt-5" style="min-height: 100vh;">
+            <h4 class="text-center " style="padding-top: 20px;"><b>Hello ,{{ patient.user_profile.user.username }}</b></h4>
+            <h2 class="text-center">Book Appointment</h2>
+            <form method="POST" action="{% url 'book_appointment' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="patient_id" class="form-label">Patient ID</label>
+                    <input type="text" class="form-control" value="{{ patient.patient_id }}"  id="patient_id" name="patient_id" readonly>
+                </div>
+                 <!-- Doctor Dropdown -->
+                            <div class="mb-3">
+                                <label for="doctor_id" class="form-label">Doctor</label>
+                                <select class="form-select searchable-dropdown" id="doctor_id" name="doctor_id" required>
+                                <option value="" disabled selected>Select Doctor</option>
+                            {% for doctor in doctors %}
+                                <option value="{{ doctor.id }}">
+                        {{ doctor.user_profile.user.get_full_name }} ({{ doctor.department.name }})
+                                </option>
+                            {% endfor %}
+                                </select>
+                        </div>
+                <div class="mb-3">
+                    <label for="appointment_date" class="form-label">Appointment Date</label>
+                    <input type="datetime-local" class="form-control" id="appointment_date" name="appointment_date" min="" required>
+                    <div class="invalid-feedback">
+                        Please select a valid date (today or a future date).
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="reason" class="form-label">Reason</label>
+                    <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Book Appointment</button>
+            </form>
+            
+        </div>
+    </body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Select2 for the doctor dropdown
+            $('#doctor_id').select2({
+                placeholder: "Search by doctor name or department...",
+                allowClear: true,
+                minimumResultsForSearch: 0,
+                templateResult: formatDoctorOption, // Customize display in the dropdown
+                language: {
+                    noResults: function () {
+                        return "No matching doctors found";
+                    }
+                }
+            });
+      
+            // Format how doctors appear in the dropdown
+            function formatDoctorOption(doctor) {
+                if (!doctor.id) {
+                    return doctor.text;
+                }
+      
+                // Custom display with doctor's name and department
+                let details = doctor.text.split('('); // Split doctor name and department
+                let doctorName = details[0].trim();
+                let department = details[1] ? details[1].replace(')', '').trim() : '';
+      
+                return $(`
+                    <div>
+                        <strong>${doctorName}</strong>
+                        <br>
+                        <small>Department: ${department}</small>
+                    </div>
+                `);
+            }
+        });
+      </script>
+      
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const appointmentDateInput = document.getElementById('appointment_date');
+            
+            // Get current date and time in the format 'YYYY-MM-DDTHH:mm'
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            appointmentDateInput.min = minDateTime;
+        });
+    </script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      {% for msg in messages %}
+      swal({
+      title: "{{msg}}",
+      text: "{{msg.tags}}",
+      icon: "{{msg.tags}}",
+    });
+      {% endfor %}
+     </script>
+    {% endblock %}

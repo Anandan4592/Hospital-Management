@@ -1,0 +1,133 @@
+{% extends 'doctor/doctor_navbar.html' %}
+{% block content %}
+{% load static %}
+<style>
+  /* Fade-in animation */
+  .animate-fade-in {
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+  }
+  
+  @keyframes fadeIn {
+      from {
+          opacity: 0;
+      }
+      to {
+          opacity: 1;
+      }
+  }
+  
+  /* Slide-in animation */
+  .animate-slide-in {
+      opacity: 0;
+      transform: translateX(-50px);
+      animation: slideIn 1s forwards;
+  }
+  
+  @keyframes slideIn {
+      from {
+          opacity: 0;
+          transform: translateX(-50px);
+      }
+      to {
+          opacity: 1;
+          transform: translateX(0);
+      }
+  }
+
+</style>
+<style>
+    /* General projected style */
+    .projected {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2),
+                    0 15px 30px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        background: #ffffff;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    /* Hover effect */
+    .projected:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3),
+                    0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Neomorphic container */
+    .container-custom {
+        padding: 30px;
+        background: linear-gradient(145deg, #f3f3f3, #ffffff);
+        border-radius: 15px;
+        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.1),
+                    -8px -8px 16px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Form styling */
+    .form-section {
+        padding: 20px;
+        margin-bottom: 20px;
+        background: #fefefe;
+    }
+
+    /* List-group custom styling */
+    .list-group-item {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+</style>
+<div style="min-height: 85vh;" >
+<section>
+  <div class="container-fluid d-flex align-items-center justify-content-center" 
+       style=" text-align: center; min-height: 35vh;">
+      <h1 class="text-dark animate-slide-in" style="font-size: calc(2vw + 1rem);">
+          Welcome Dr. {{ doctor.user_profile.user.username }}
+      </h1>
+  </div>
+</section>
+
+<div class="container mt-1 projected" style="padding: 10px;" >
+ 
+    <div class="row mt-4">
+        <!-- Total Appointments -->
+        <div class="col-md-6 ">
+            <a href="#" class="text-decoration-none">
+                <div class="card text-white bg-primary mb-3 projected"  >
+                    <div class="card-header">Total Appointments</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ total_appointments }}</h5>
+                        <p class="card-text">Appointments that are scheduled or rescheduled.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Consulted -->
+        <div class="col-md-6 " style="padding: 0%;">
+            <a href="#" class="text-decoration-none">
+                <div class="card text-white bg-success mb-3 projected" >
+                    <div class="card-header">Consulted</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ consulted_count }}</h5>
+                        <p class="card-text">Appointments marked as completed.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    {% for msg in messages %}
+    swal({
+        title: "{{ msg }}",
+        text: "{{ msg.tags }}",
+        icon: "{{ msg.tags }}",
+    });
+    {% endfor %}
+</script>
+
+{% endblock %}

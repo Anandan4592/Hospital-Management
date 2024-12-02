@@ -1,0 +1,51 @@
+{% extends 'patient/patient_navbar.html' %}
+{% block content %}
+{% load static %}
+<div class="container mt-5" style="padding-top: 40px;min-height: 90vh;">
+    <h2>Payment</h2>
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+              
+                <th>Discharge Date</th>
+                <th>Consultation Fee</th>
+                <th>Total Medicine Cost</th>
+                <th>Lab Cost</th>
+                <th>Room Charge</th>
+                <th>Total Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for discharge in bill %}
+            <tr>
+                
+                <td>{{ discharge.discharge_date|date:"d M Y" }}</td>
+                <td>₹{{ discharge.consultation_fee }}</td>
+                <td>₹{{ discharge.total_medicine_cost }}</td>
+                <td>₹{{ discharge.medical_history.lab_report_cost }}</td>
+                <td>₹{{ discharge.room_charge }}</td>
+                <td>₹{{ discharge.total_amount }}</td>
+                <td>
+                    <a href="{% url 'patient_bill_final' discharge.id %}" class="btn btn-success">Pay</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">No bills generated</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      {% for msg in messages %}
+      swal({
+      title: "{{msg}}",
+      text: "{{msg.tags}}",
+      icon: "{{msg.tags}}",
+    });
+      {% endfor %}
+     </script>
+    {% endblock %}

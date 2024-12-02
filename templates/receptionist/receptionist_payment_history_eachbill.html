@@ -1,0 +1,164 @@
+{% extends 'receptionist/receptionist_navbar.html' %}
+{% block content %}
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding-top: 80px; /* Adds space below the navbar */
+    }
+
+    h2, h3, h4 {
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table th, table td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .container {
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 20px;
+        min-height: 90vh;
+    }
+</style>
+
+<div class="container mt-5 mb-5" style="max-width: 800px; border: 1px solid #ccc; padding: 30px;">
+    <h2 class="text-center">Starlight Hospital</h2>
+    <p class="text-center">Patient Bill</p>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Patient Information:</h5>
+            <p><strong>Name:</strong> {{ discharge.patient.user_profile.user.username }}</p>
+            <p><strong>Patient ID:</strong> {{ discharge.patient.patient_id }}</p>
+            <p><strong>Discharge Date:</strong> {{ discharge.discharge_date|date:"d M Y" }}</p>
+        </div>
+        <div class="col-md-6 text-right">
+            <h5>Doctor Information:</h5>
+            <p><strong>Name:</strong> {{ discharge.doctor.user_profile.user.username }}</p>
+            <p><strong>Department:</strong> {{ discharge.doctor.department.name }}</p>
+        </div>
+    </div>
+    <div class="mt-4">
+        <h5>Medicine Details:</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Rate (₹)</th>
+                    <th>Quantity</th>
+                    <th>Total Cost (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medicine in medicine_details %}
+                <tr>
+                    <td>{{ medicine.medicine }}</td>
+                    <td>₹{{ medicine.rate }}</td>
+                    <td>{{ medicine.quantity }}</td>
+                    <td>₹{{ medicine.total_cost }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-4">
+        <h5>Bill Details:</h5>
+        <table class="table table-bordered">
+            <tr>
+                <td><strong>Consultation Fee:</strong></td>
+                <td>₹{{ discharge.consultation_fee }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Medicine Cost:</strong></td>
+                <td>₹{{ discharge.total_medicine_cost }}</td>
+            </tr>
+            <tr>
+                <td><strong>Lab:</strong></td>
+                <td>₹{{ discharge.medical_history.lab_report_cost }}</td>
+            </tr>
+            <tr>
+                <td><strong>Room Charge:</strong></td>
+                <td>₹{{ discharge.room_charge }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Amount:</strong></td>
+                <td>₹{{ discharge.total_amount }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="mt-4 text-center">
+        <h4><strong>Payment successfull</strong></h4>
+        <h4><strong>Total Bill: ₹{{ discharge.total_amount }}</strong></h4>
+      
+        <button class="btn btn-success">Print</button>
+
+       
+    </div>
+</div>
+
+<script>
+    document.querySelector('.btn-success').addEventListener('click', function() {
+        window.print();
+    });
+</script>
+<script>
+    function printBill() {
+        window.print();
+    }
+    </script>
+     
+    <style>
+   @media print {
+    /* Hide non-essential elements when printing */
+    nav, footer, button {
+        display: none !important;
+    }
+    .header {
+    display: none !important;
+  }
+    /* Ensure white background and black text */
+    body {
+        background: white;
+        color: black;
+    }
+
+    .shadow-md {
+        box-shadow: none !important;
+    }
+
+    /* Preserve the layout for the Patient and Doctor Information */
+    .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .col-md-6 {
+        flex: 1;
+        padding-right: 15px;
+    }
+
+    /* Fix text alignment */
+    .text-right {
+        text-align: right !important;
+    }
+
+    /* Make sure table data and headers align correctly */
+    table th, table td {
+        text-align: left !important;
+    }
+}
+    </style>
+{% endblock %}

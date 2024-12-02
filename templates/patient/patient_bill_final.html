@@ -1,0 +1,174 @@
+{% extends 'patient/patient_navbar.html' %}
+{% block content %}
+{% load static %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding-top: 20px; /* Adds space below the navbar */
+    }
+
+    h2, h3, h4 {
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table th, table td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .container {
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 20px;
+        min-height: 90vh;
+    }
+</style>
+
+<div class="container mt-5 mb-5" style="max-width: 800px; border: 1px solid #ccc; padding: 30px;">
+    <h2 class="text-center">Starlight Hospital</h2>
+    <p class="text-center">Patient Bill</p>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Patient Information:</h5>
+            <p><strong>Name:</strong> {{ discharge.patient.user_profile.user.username }}</p>
+            <p><strong>Patient ID:</strong> {{ discharge.patient.patient_id }}</p>
+            <p><strong>Discharge Date:</strong> {{ discharge.discharge_date|date:"d M Y" }}</p>
+        </div>
+        <div class="col-md-6 text-right">
+            <h5>Doctor Information:</h5>
+            <p><strong>Name:</strong> {{ discharge.doctor.user_profile.user.username }}</p>
+            <p><strong>Department:</strong> {{ discharge.doctor.department.name }}</p>
+        </div>
+    </div>
+    <div class="mt-4">
+        <h5>Medicine Details:</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Rate (₹)</th>
+                    <th>Quantity</th>
+                    <th>Total Cost (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medicine in medicine_details %}
+                <tr>
+                    <td>{{ medicine.medicine }}</td>
+                    <td>₹{{ medicine.rate }}</td>
+                    <td>{{ medicine.quantity }}</td>
+                    <td>₹{{ medicine.total_cost }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-4">
+        <h5>Bill Details:</h5>
+        <table class="table table-bordered">
+            <tr>
+                <td><strong>Consultation Fee:</strong></td>
+                <td>₹{{ discharge.consultation_fee }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Medicine Cost:</strong></td>
+                <td>₹{{ discharge.total_medicine_cost }}</td>
+            </tr>
+            <tr>
+                <td><strong>Lab:</strong></td>
+                <td>₹{{ discharge.medical_history.lab_report_cost }}</td>
+            </tr>
+            <tr>
+                <td><strong>Room Charge:</strong></td>
+                <td>₹{{ discharge.room_charge }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Amount:</strong></td>
+                <td>₹{{ discharge.total_amount }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="mt-4 text-center">
+        <h4><strong>Total Bill: ₹{{ discharge.total_amount }}</strong></h4>
+        <!-- Razorpay Payment Button -->
+        <button id="pay-now" class="btn btn-success">Pay Now</button>
+
+    </div>
+</div>
+
+<!-- Include Razorpay's JavaScript library -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('pay-now').onclick = function(e) {
+        e.preventDefault();
+        
+        var options = {
+            "key": "{{ razorpay_key }}", // Your Razorpay API key
+            "amount": {{ discharge.total_amount }}* 100 , // Amount in paise
+            "currency": "INR",
+            "name": "Starlight Hospital",
+            "description": "Patient Bill Payment",
+             // Optional logo
+            "handler": function (response){
+                // Make an AJAX request to the backend
+                fetch("{% url 'razorpay_payment_callback' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: new URLSearchParams({
+                        "razorpay_payment_id": response.razorpay_payment_id,
+                        "discharge_id": "{{ discharge.id }}"
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        // Redirect or reload the page
+                        window.location.href = "{% url 'patient_bill_payment' %}";
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(err => console.error('Error:', err));
+            },
+            "prefill": {
+                "name": "{{ discharge.patient.user_profile.user.username }}",
+                "email": "{{ discharge.patient.user_profile.user.email }}", 
+                "contact": "1234567890" 
+            },
+            "notes": {
+                "patient_id": "{{ discharge.patient.patient_id }}",
+                "discharge_id": "{{ discharge.id }}"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+</script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      {% for msg in messages %}
+      swal({
+      title: "{{msg}}",
+      text: "{{msg.tags}}",
+      icon: "{{msg.tags}}",
+    });
+      {% endfor %}
+     </script>
+    {% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'admin/navbar.html' %}
+{% block content %}
+{% load static %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<style>
+    /* Custom shadow for a projected 3D effect */
+    .projected {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), 
+                    0 15px 30px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        background: #ffffff;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    /* Hover effect to amplify projection */
+    .projected:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3), 
+                    0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .review-card {
+        padding: 20px;
+        margin-bottom: 20px;
+        background: #fefefe;
+    }
+
+    .container-custom {
+        padding: 30px;
+        background: linear-gradient(145deg, #f3f3f3, #ffffff);
+        border-radius: 15px;
+        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.1), 
+                    -8px -8px 16px rgba(255, 255, 255, 0.8);
+    }
+</style>
+
+<div class="container mt-5" style="min-height: 90vh;">
+    <div class="projected container-custom">
+        <h2 class="mb-4">Doctor Reviews for {{ doctor.user_profile.user.username }}</h2>
+
+        <!-- Rating Summary -->
+        <div class="projected p-3 mb-4">
+            <h4 class="text-primary mb-3">Average Rating</h4>
+            {% if rating %}
+                <div class="d-flex align-items-center">
+                    {% for i in star_range %}
+                        <i class="fas fa-star {% if i <= average_rating %} text-warning {% else %} text-muted {% endif %}"></i>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No reviews available</p>
+            {% endif %}
+        </div>
+
+        <!-- Reviews List -->
+        <h3 class="mb-4 text-success">Reviews:</h3>
+        <div class="list-group">
+            {% for review in rating %}
+                <div class="projected review-card">
+                    <h5 class="mb-2 text-dark">{{ review.patient.user_profile.user.username }} - 
+                        <span class="text-warning">Rating: {{ review.rating }} / 5</span>
+                    </h5>
+                    <p class="mb-2 text-muted">{{ review.review }}</p>
+                    <small class="text-secondary">Reviewed on: {{ review.created_at|date:"F j, Y" }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

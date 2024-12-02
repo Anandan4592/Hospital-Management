@@ -1,0 +1,51 @@
+{% extends 'patient/patient_navbar.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-5" style="padding-top: 40px;min-height: 90vh;">
+    <h2>Bills and Payment History</h2>
+    <table class="table table-bordered mt-4 text-center">
+        <thead>
+            <tr>
+                <th>Bill ID</th>
+                <th>Discharge Date</th>
+                <th>Total Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for discharge in bill %}
+            <tr>
+                <td>{{ discharge.id }} </td>
+                <td>{{ discharge.discharge_date|date:"d M Y" }}</td>
+                <td>₹{{ discharge.total_amount }}</td>
+                
+                <td>
+                    <a href="{% url 'patient_payment_history_eachbill' discharge.id %}" class="btn btn-success">view bill</a>
+                    {% if discharge.insurance_applied == False %}
+                    <a href="{% url 'patient_insurance' discharge.id %}" class="btn btn-info">Apply for insurance</a>
+                    {% else %}
+                    <a href="{% url 'patient_view_insurance' discharge.id %}" class="btn btn-success">view insurance application</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">No bills available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      {% for msg in messages %}
+      swal({
+      title: "{{msg}}",
+      text: "{{msg.tags}}",
+      icon: "{{msg.tags}}",
+    });
+      {% endfor %}
+     </script>
+    {% endblock %}

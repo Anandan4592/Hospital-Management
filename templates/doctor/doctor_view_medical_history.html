@@ -1,0 +1,105 @@
+{% extends 'doctor/doctor_navbar.html' %}
+{% block content %}
+{% load static %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding-top: 20px; /* Adds space below the navbar */
+    }
+
+    h2, h3, h4 {
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table th, table td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .container {
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 20px;
+        min-height: 90vh;
+    }
+</style>
+{% for history in medical_history %}
+<div class="container mt-5 mb-5" style="max-width: 800px; border: 1px solid #ccc; padding: 30px;">
+    <h2 class="text-center">Starlight Hospital</h2>
+    <p class="text-center">{{history.patient.user_profile.user.username}} - Medical History</p>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Info:</h5>
+            <p><strong>Visit date:</strong> {{ history.visit_date|date:"d M Y" }}</p>
+            <p><strong>Patient ID:</strong> {{ history.patient.patient_id }}</p>
+    
+        </div>
+        <div class="col-md-6 text-right">
+            <h5>Doctor Information:</h5>
+            <p><strong>Name:</strong> {{ history.doctor.user_profile.user.username }}</p>
+            <p><strong>Department:</strong> {{history.doctor.department.name }}</p>
+        </div>
+    </div>
+    <div class="mt-4">
+        <h5>Medicine Details:</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            {% if history.medicine_details %}
+            {% for medicine in history.medicine_details %}
+                <tr>
+                    <td>{{ medicine.medicine }}</td>
+                    <td>{{ medicine.quantity }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="2">No medicines prescribed</td>
+            </tr>
+        {% endif %}
+        </table>
+    </div>
+    <div class="mt-4">
+        <h5>Bill Details:</h5>
+        <table class="table table-bordered">
+            <tr>
+                <td><strong>diagnosis</strong></td>
+                <td>{{ history.diagnosis }}</td>
+            </tr>
+            
+            <tr>
+                <td><strong>Lab reports</strong></td>
+                <td>
+                    {% if history.lab_reports %}
+                        <a href="{{ history.lab_reports.url }}">Lab reports</a>
+                    {% else %}
+                        No file
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    
+</div>
+{% empty %}
+<div class="container mt-5 mb-5" style="max-width: 800px; border: 1px solid #ccc; padding: 30px;">
+    <h2 class="text-center">Starlight Hospital</h2>
+    <p class="text-center">{{history.patient.user_profile.user.username}} - Medical History</p>
+    <p class="text-center"><b>No medical history available</b></p>
+</div>
+{% endfor %}
+
+{% endblock %}

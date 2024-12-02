@@ -1,0 +1,135 @@
+{% extends 'patient/patient_navbar.html' %}
+{% block content %}
+{% load static %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding-top: 20px; /* Adds space below the navbar */
+    }
+
+    h2, h3, h4 {
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table th, table td {
+        padding: 8px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .container {
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 20px;
+        min-height: 90vh;
+    }
+</style>
+<style>
+    /* Custom shadow for a projected 3D effect */
+    .projected {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), 
+                    0 15px 30px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        background: #ffffff;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    /* Hover effect to amplify projection */
+    .projected:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3), 
+                    0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .review-card {
+        padding: 20px;
+        margin-bottom: 20px;
+        background: #fefefe;
+    }
+
+    .container-custom {
+        padding: 30px;
+        background: linear-gradient(145deg, #f3f3f3, #ffffff);
+        border-radius: 15px;
+        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.1), 
+                    -8px -8px 16px rgba(255, 255, 255, 0.8);
+    }
+</style>
+{% if medical_history.exists %}
+    {% for history in medical_history %}
+    <div class="container mt-5 mb-5 projected" style="max-width: 800px; border: 1px solid #ccc; padding: 30px;">
+        <h2 class="text-center">Starlight Hospital</h2>
+        <p class="text-center">{{ history.patient.user_profile.user.username }} - Medical History</p>
+        <hr>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Info:</h5>
+                <p><strong>Visit date:</strong> {{ history.visit_date|date:"d M Y" }}</p>
+                <p><strong>Patient ID:</strong> {{ history.patient.patient_id }}</p>
+            </div>
+            <div class="col-md-6 text-right">
+                <h5>Doctor Information:</h5>
+                <p><strong>Name:</strong> {{ history.doctor.user_profile.user.username }}</p>
+                <p><strong>Department:</strong> {{ history.doctor.department.name }}</p>
+                <a href="{% url 'patient_doctor_review' history.id %}"><button class="btn btn-success">Review doctor</button></a>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h5>Medicine Details:</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                {% if history.medicine_details %}
+                {% for medicine in history.medicine_details %}
+                    <tr>
+                        <td>{{ medicine.medicine }}</td>
+                        <td>{{ medicine.quantity }}</td>
+                    </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="2">No medicines prescribed</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        <div class="mt-4">
+            <h5>Consultation Details:</h5>
+            <table class="table table-bordered">
+                <tr>
+                    <td><strong>Diagnosis</strong></td>
+                    <td>{{ history.diagnosis }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Lab Reports</strong></td>
+                    <td>
+                        {% if history.lab_reports %}
+                            <a href="{{ history.lab_reports.url }}">Lab reports</a>
+                        {% else %}
+                            No file
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="container mt-5 mb-5" style="max-width: 800px; border: 1px solid #ccc; padding: 30px;">
+    <h2 class="text-center">Starlight Hospital</h2>
+    <p class="text-center"><b>No medical history available for this patient.</b></p>
+</div>
+{% endif %}
+
+{% endblock %}

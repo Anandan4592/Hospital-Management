@@ -1,0 +1,297 @@
+{% extends 'admin/navbar.html' %}
+{% block content %}
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" rel="stylesheet">
+<style>
+    .modal-dialog-scrollable .modal-body {
+        max-height: calc(100vh - 200px); /* Adjust based on desired space */
+        overflow-y: auto;
+    }
+</style>
+<style>
+    /* Custom shadow for a projected 3D effect */
+    .projected {
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), 
+                    0 15px 30px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        background: #ffffff;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    /* Hover effect to amplify projection */
+    .projected:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3), 
+                    0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .review-card {
+        padding: 20px;
+        margin-bottom: 20px;
+        background: #fefefe;
+    }
+
+    .container-custom {
+        padding: 30px;
+        background: linear-gradient(145deg, #f3f3f3, #ffffff);
+        border-radius: 15px;
+        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.1), 
+                    -8px -8px 16px rgba(255, 255, 255, 0.8);
+    }
+</style>
+<body>
+    <div class="cover-container d-flex h-100 p-3 mt-5 flex-column" style="min-height: 100vh;">
+        <div class="container text-center ">
+            <h1>Welcome, Admin</h1><br>
+             <!-- Low Stock Notification -->
+    {% if low_stock_medicines %}
+    <div class="alert alert-danger text-left">
+        <strong>Alert:</strong> Low stock notification from pharmacy! Check inventory for more details:
+        <ul>
+            {% for medicine in low_stock_medicines %}
+            <li><strong>{{ medicine.medicine }}</strong> (Stock: <span class="text-danger">{{ medicine.stock }}</span>)</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+            <div class="bg-secondary mt-4 " style="padding: 10px;"><h1 class="text-white">Approvals</h1></div>
+            
+            <div class="row mt-5 " style="padding-top: 20px;">
+                <!-- Total Appointments -->
+                <div class="col-md-4  projected" >
+                    <a href="#" class="text-decoration-none projected" data-bs-toggle="modal" data-bs-target="#doctorModal">
+                        <div class="card text-white bg-primary mb-3 mt-3 projected"  >
+                            <div class="card-header">Doctor</div>
+                            <div class="card-body">
+                                
+                                <h5 class="card-title fa-3x"><i class="fa-solid fa-user-doctor " style="color: #ffffff;"></i>   {{doctors_count}} </h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+        
+                <!-- Consulted -->
+                <div class="col-md-4 projected">
+                    <a href="#" class="text-decoration-none " data-bs-toggle="modal" data-bs-target="#receptionistModal">
+                        <div class="card text-white bg-success mb-3 mt-3 projected" >
+                            <div class="card-header">Receptionist</div>
+                            <div class="card-body">
+                                <h5 class="card-title fa-3x"><i class="fa-solid fa-person-circle-exclamation" style="color: #ffffff;"></i> {{ receptionists_count }}</h5>
+                               
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4 projected">
+                    <a href="#" class="text-decoration-none "  data-bs-toggle="modal" data-bs-target="#pharmacistModal">
+                        <div class="card text-white bg-info mb-3 mt-3 projected" >
+                            <div class="card-header">Pharmacy</div>
+                            <div class="card-body">
+                                <h5 class="card-title fa-3x"><i class="fa-solid fa-prescription-bottle-medical" style="color: #ffffff;"></i> {{ pharmacists_count }}</h5>
+                               
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% if hospital_reviews.exists %}
+            <h3 class="mb-4 text-success mt-4" style="padding-top: 15px;">Reviews:</h3>
+        <div class="list-group">
+            {% for hospital_review in hospital_reviews %}
+            <div class="col-md-4">
+                <div class="projected review-card">
+                    <h5 class="mb-2 text-dark">{{ hospital_review.patient.user_profile.user.username }} - 
+                        <span class="text-warning">{{ hospital_review.review }}</span>
+                    </h5>
+                </div>
+                </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-danger text-left">
+            <h3 class="mb-4 text-success">No reviews at the moment</h3>
+        </div>
+        {% endif %}
+        </div>
+        </div>
+    </div>
+
+ <!--------------------------------------------------- Doctor Modal ----------------------------------------------------->
+<div class="modal fade" id="doctorModal" tabindex="-1" aria-labelledby="doctorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="doctorModalLabel">Doctor Notifications</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Address</th>
+                            <th>Resume</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doctor in doctors %}
+                        <tr>
+                            <td>{{ doctor.fname }}</td>
+                            <td>{{ doctor.lname }}</td>
+                            <td>{{ doctor.uname }}</td>
+                            <td>{{ doctor.email }}</td>
+                            <td>{{ doctor.department.name }}</td>
+                            <td>{{ doctor.address }}</td>
+                            <td>
+                                <a href="{{ doctor.resume.url }}" target="_blank" class="btn btn-link">View Resume</a>
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'approve_doctor' doctor.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'reject_doctor' doctor.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No doctor notifications available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+ <!----------------------------------------------------- Receptionist Modal --------------------------------------------------->
+ <div class="modal fade" id="receptionistModal" tabindex="-1" aria-labelledby="receptionistModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="receptionistModalLabel">Doctor Notifications</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            <th>Email</th>                       
+                            <th>Address</th>
+                            <th>Resume</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for receptionist in receptionists %}
+                        <tr>
+                            <td>{{ receptionist.fname }}</td>
+                            <td>{{ receptionist.lname }}</td>
+                            <td>{{ receptionist.uname }}</td>
+                            <td>{{ receptionist.email }}</td>
+                            <td>{{ receptionist.address }}</td>
+                            <td>
+                                <a href="{{ receptionist.resume.url }}" target="_blank" class="btn btn-link">View Resume</a>
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'approve_receptionist' receptionist.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'reject_receptionist' receptionist.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No receptionist notifications available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+ <!----------------------------------------------------- Pharmacist Modal --------------------------------------------------->
+ <div class="modal fade" id="pharmacistModal" tabindex="-1" aria-labelledby="pharmacistModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pharmacistModalLabel">Pharmacist Applications</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            <th>Email</th>                       
+                            <th>Address</th>
+                            <th>Resume</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pharmacist in pharmacists %}
+                        <tr>
+                            <td>{{ pharmacist.fname }}</td>
+                            <td>{{ pharmacist.lname }}</td>
+                            <td>{{ pharmacist.uname }}</td>
+                            <td>{{ pharmacist.email }}</td>
+                            <td>{{ pharmacist.address }}</td>
+                            <td>
+                                <a href="{{ pharmacist.resume.url }}" target="_blank" class="btn btn-link">View Resume</a>
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'approve_pharmacist' pharmacist.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'reject_pharmacist' pharmacist.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No pharmacist notifications available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+      <script>
+        {% for msg in messages %}
+        swal({
+        title: "{{msg}}",
+        text: "{{msg.tags}}",
+        icon: "{{msg.tags}}",
+      });
+        {% endfor %}
+       </script>
+</body>
+
+{% endblock %}

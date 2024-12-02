@@ -1,0 +1,18 @@
+{% extends 'home/hospital_navbar.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-5" style="min-height: 90vh;">
+    <h2>Enter OTP</h2>
+    <form method="POST" action="{% url 'verify_otp' %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="otp" class="form-label">OTP</label>
+        <input type="text" class="form-control" id="otp" name="otp" required>
+      </div>
+      <!-- Hidden email field to pass the email for OTP verification -->
+      <input type="hidden" name="email" value="{{ email }}">
+      <button type="submit" class="btn btn-primary">Verify OTP</button>
+    </form>
+</div>
+{% endblock %}

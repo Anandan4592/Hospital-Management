@@ -1,0 +1,162 @@
+{% extends 'home/hospital_navbar.html' %}
+{% block content %}
+{% load static %}
+<style>
+  /* General projected style */
+  .projected {
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2),
+                  0 15px 30px rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      background: #ffffff;
+      transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  /* Hover effect */
+  .projected:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3),
+                  0 20px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Neomorphic container */
+  .container-custom {
+      padding: 30px;
+      background: linear-gradient(145deg, #f3f3f3, #ffffff);
+      border-radius: 15px;
+      box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.1),
+                  -8px -8px 16px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Form styling */
+  .form-section {
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #fefefe;
+  }
+
+  /* List-group custom styling */
+  .list-group-item {
+      border: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background: #ffffff;
+  }
+</style>
+<main>
+    <!-- Section: Design Block -->
+<section class="vh-100" >
+    <!-- Jumbotron -->
+    <div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+      <div class="container mt-5" style="padding-bottom: 15%;">
+        <div class="row gx-lg-5 align-items-center projected">
+          <div class="col-lg-6 mb-5 mb-lg-0">
+            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
+                      style="width: 185px;" alt="logo">
+              <h1 class="text-primary">Starlight Hospital
+            </h1>
+            <p style="color: hsl(217, 10%, 50.8%)">
+                Behind every pill is a promise of care. Join us in delivering it.
+            </p>
+          </div>
+  
+          <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="card">
+              <div class="card-body py-5 px-md-5 projected">
+                <form action="{% url 'pharmacist_register' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h1 style="text-align: center;">Pharmacist Sign Up</h1>
+                  <!-- 2 column grid layout with text inputs for the first and last names -->
+                  <div class="row mt-3">
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >First name</label>
+                        <input type="text" name="fname"  class="form-control" required />
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >Last name</label>
+                        <input type="text" name="lname"  class="form-control" required />
+                        
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- Email input -->
+                  <div class="row">
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >Username</label>
+                        <input type="text" name="uname"   class="form-control" required />
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >Email</label>
+                        <input type="email" name="email"   class="form-control" required />
+                        
+                      </div>
+                    </div>
+                  </div>
+  
+                  
+                  <div class="row">
+                    
+                    <div class="col-md-12 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >Address</label>
+                        <textarea class="form-control" name="address" rows="1" required></textarea>
+                        
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label">Image</label>
+                        <input type="file"  name="image" class="form-control" />
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label">Resume</label>
+                        <input type="file"  name="cv" class="form-control" required/>
+                      </div>
+                    </div>
+                  </div>
+                  
+  
+                  <!-- Submit button -->
+                  <button type="submit" class="btn btn-primary btn-block mb-4">
+                    Sign up
+                  </button>
+                  <p>Already have an account? <a href="{% url 'hospital_loginpage' %}">Log In</a></p>
+                  
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Jumbotron -->
+  </section>
+  <!-- Section: Design Block -->
+</main>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+      <script>
+        {% for msg in messages %}
+        swal({
+        title: "{{msg}}",
+        text: "{{msg.tags}}",
+        icon: "{{msg.tags}}",
+      });
+        {% endfor %}
+       </script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'admin/navbar.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-5" style="min-height: 90vh;">
+    <h2 class="text-center">Patient Statistics</h2>
+    <hr>
+    <div class="row">
+        <!-- Left side: Patient Information -->
+        <div class="col-md-6">
+            <h4>Patient Information</h4>
+            <p><strong>Name:</strong> {{ patient.user_profile.user.username }}</p>
+            <p><strong>Patient ID:</strong> {{ patient.patient_id }}</p>
+            <p><strong>Address:</strong> {{ patient.address }}</p>
+            <p><strong>Total Visits:</strong> {{ total_visits }}</p>
+            <p><strong>Total Amount Paid:</strong> ₹{{ total_amount_paid }}</p>
+        </div>
+        
+        <!-- Right side: Pie Chart -->
+        <div class="col-md-6">
+            
+            <canvas id="statisticsChart" width="400" height="400"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Data for the pie chart
+    const data = {
+        labels: [
+            'Consultation Fees',
+            'Medicine Costs',
+            'Room Charges',
+            
+        ],
+        datasets: [{
+            label: 'Patient Statistics',
+            data: [
+                {{ total_consultation_fees }},
+                {{ total_medicine_costs }},
+                {{ total_room_charges }},
+                {{ total_amount_paid|add:"-total_consultation_fees-total_medicine_costs-total_room_charges" }}
+            ],
+            backgroundColor: [
+                '#FF6384', // Red
+                '#36A2EB', // Blue
+                '#FFCE56', // Yellow
+                '#4BC0C0'  // Green
+            ],
+            hoverOffset: 4
+        }]
+    };
+
+    // Configuration options for the chart
+    const config = {
+        type: 'pie',
+        data: data,
+    };
+
+    // Render the chart
+    const statisticsChart = new Chart(
+        document.getElementById('statisticsChart'),
+        config
+    );
+</script>
+
+
+{% endblock %}

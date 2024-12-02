@@ -1,0 +1,165 @@
+{% extends 'admin/navbar.html' %}
+{% block content %}
+{% load static %}
+
+<section class="vh-100" style="background-color: #f7f9fc;">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp" 
+                 style="width: 120px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);" alt="logo">
+            <h1 class="mt-3 text-primary" style="font-weight: bold; letter-spacing: 1px;">Admin Management</h1>
+        </div>
+
+        <div class="row gx-5">
+            <!-- Add Department -->
+            <div class="col-lg-4 mb-4">
+                <div class="card projected">
+                    <div class="card-body">
+                        <h3 class="text-center text-secondary mb-4">Add Department</h3>
+                        <form action="{% url 'admin_add_department' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <label class="form-label">Department Name:</label>
+                                <input type="text" name="department" class="form-control rounded-pill" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block w-100 rounded-pill">
+                                Add Department
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Room Type -->
+            <div class="col-lg-4 mb-4">
+                <div class="card projected">
+                    <div class="card-body">
+                        <h3 class="text-center text-secondary mb-4">Add Room Type</h3>
+                        <form action="{% url 'admin_add_rooms' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <label class="form-label">Room Name:</label>
+                                <input type="text" name="room_name" class="form-control rounded-pill" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block w-100 rounded-pill">
+                                Add Room Type
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Medicine -->
+            <div class="col-lg-4 mb-4">
+                <div class="card projected">
+                    <div class="card-body">
+                        <h3 class="text-center text-secondary mb-4">Add Medicine</h3>
+                        <form action="{% url 'admin_add_medicine' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <label class="form-label">Medicine Name:</label>
+                                <input type="text" name="medicine_name" class="form-control rounded-pill" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block w-100 rounded-pill">
+                                Add Medicine
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-5 mt-5">
+            <!-- Add Room Details -->
+            <div class="col-lg-6 mb-4">
+                <div class="card projected">
+                    <div class="card-body">
+                        <h3 class="text-center text-secondary mb-4">Add Room</h3>
+                        <form action="{% url 'admin_add_room_count' %}" method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Room Type:</label>
+                                    <select name="room_type" class="form-control rounded-pill" required>
+                                        {% for room in rooms %}
+                                        <option value="{{ room.id }}">{{ room.room_type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Rate:</label>
+                                    <input type="number" name="room_rate" class="form-control rounded-pill" />
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Count:</label>
+                                    <input type="number" name="room_count" class="form-control rounded-pill" />
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block w-100 rounded-pill">
+                                Add Room
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Medicine Stock -->
+            <div class="col-lg-6 mb-4">
+                <div class="card projected">
+                    <div class="card-body">
+                        <h3 class="text-center text-secondary mb-4">Stock Medicine</h3>
+                        <form action="{% url 'admin_add_medicine_price' %}" method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Medicine Name:</label>
+                                    <select name="medicine_name" class="form-control rounded-pill" required>
+                                        {% for medicine in medicines %}
+                                        <option value="{{ medicine.id }}">{{ medicine.medicine }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Price:</label>
+                                    <input type="number" name="medicine_price" class="form-control rounded-pill" />
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Stock:</label>
+                                    <input type="number" name="medicine_stock" class="form-control rounded-pill" />
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block w-100 rounded-pill">
+                                Stock Medicine
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .projected {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 15px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        background: #ffffff;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .projected:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+</style>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+  {% for msg in messages %}
+  swal({
+      title: "{{ msg }}",
+      text: "{{ msg.tags }}",
+      icon: "{{ msg.tags }}",
+  });
+  {% endfor %}
+</script>
+{% endblock %}

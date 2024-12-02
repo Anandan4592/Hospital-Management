@@ -1,0 +1,95 @@
+{% extends 'patient/patient_navbar.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-5" style="min-height: 90vh;padding-top: 45px;">
+    <h2 class="mb-4">Review Doctor: {{ doctor.user_profile.user.first_name }} ({{doctor.department.name}})</h2>
+
+    <form action="{% url 'patient_submit_review' doctor.id %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="rating">Your Rating:</label>
+            <div id="starRating" class="mb-3">
+                {% for star in "12345" %}
+                <input 
+                    type="radio" 
+                    name="rating" 
+                    id="star{{ star }}" 
+                    value="{{ star }}" 
+                    {% if review.rating == star|add:"0" %} checked {% endif %}
+                    class="star-rating-input"
+                >
+                <label for="star{{ star }}" class="star">&#9733;</label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="review">Your Review:</label>
+            <textarea 
+                class="form-control" 
+                id="review" 
+                name="review" 
+                rows="4" 
+                placeholder="Write your review here...">{{ review.review|default_if_none:'' }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+
+    {% if review %}
+    <div class="mt-5">
+        <h5>Previous Review:</h5>
+        <p><strong>Rating:</strong> {{ review.rating }} / 5</p>
+        <p><strong>Review:</strong> {{ review.review }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add some styling -->
+<style>
+    #starRating {
+        display: flex;
+        gap: 10px;
+    }
+
+    .star {
+        font-size: 2rem;
+        cursor: pointer;
+        color: lightgrey;  /* Default color */
+        transition: color 0.2s ease;
+    }
+
+    /* Hide radio inputs but keep labels visible */
+    .star-rating-input {
+        display: none;
+    }
+
+    /* Highlight stars left to right */
+    #star1:checked ~ .star:nth-of-type(1),
+    #star2:checked ~ .star:nth-of-type(-n+2),
+    #star3:checked ~ .star:nth-of-type(-n+3),
+    #star4:checked ~ .star:nth-of-type(-n+4),
+    #star5:checked ~ .star:nth-of-type(-n+5) {
+        color: gold;
+    }
+
+    /* Highlight stars when hovering */
+    .star:hover,
+    .star-rating-input:checked + .star:hover ~ .star {
+        color: gold;
+    }
+</style>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    {% for msg in messages %}
+    swal({
+        title: "{{ msg }}",
+        text: "{{ msg.tags }}",
+        icon: "{{ msg.tags }}",
+    });
+    {% endfor %}
+</script>
+
+{% endblock %}

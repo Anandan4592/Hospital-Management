@@ -1,0 +1,106 @@
+{% extends 'receptionist/receptionist_navbar.html' %}
+{% block content %}
+{% load static %}
+
+    
+
+<section class="vh-100" >
+   
+    
+    <div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+       
+      <div class="container mt-3" >
+        <div class="row gx-lg-5 align-items-center">
+            <div class="col-md-1">
+                <span hidden>h</span>
+            </div>
+  
+          <div class="col-lg-10 mb-5 mb-lg-0">
+            <div class="card">
+              <div class="card-body py-5 px-md-5">
+                <form action="{% url 'receptionist_patient_register' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h1 style="text-align: center;">Register Patient <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
+                        style="width: 185px;" alt="logo"></h1>
+                  <!-- 2 column grid layout with text inputs for the first and last names -->
+                  <div class="row mt-3">
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >First name</label>
+                        <input type="text" name="fname"  class="form-control" required />
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >Last name</label>
+                        <input type="text" name="lname"  class="form-control" required />
+                        
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- Email input -->
+                  <div class="row">
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >Username</label>
+                        <input type="text" name="uname"   class="form-control" required />
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >Email</label>
+                        <input type="email" name="email"   class="form-control" required />
+                        
+                      </div>
+                    </div>
+                  </div>
+  
+                  
+                  <div class="row">
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label >Gender</label><br>
+                        <select id="gender" name="gender" class="form-control form-control-fluid" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                        
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <div class="form-outline">
+                        <label class="form-label" >Address</label>
+                        <textarea class="form-control" name="address" rows="1" required></textarea>
+                        
+                      </div>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block mb-4">
+                  Register
+                  </button>
+                  
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Jumbotron -->
+  </section>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script>
+    {% for msg in messages %}
+    swal({
+    title: "{{msg}}",
+    text: "{{msg.tags}}",
+    icon: "{{msg.tags}}",
+  });
+    {% endfor %}
+   </script>
+  {% endblock %}
