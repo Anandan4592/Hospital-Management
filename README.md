@@ -15,28 +15,42 @@ Ensure you have Python installed (version 3.7 or higher). Then, install the requ
 pip install -r requirements.txt
 
 3. Update Email Configuration
+   
 Edit the EMAIL_HOST and related settings in the settings.py file to match your email service. Locate the following lines in settings.py and update accordingly:
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'your_email_host'
+
+EMAIL_HOST = 'your_email_host'.
+
 EMAIL_PORT = 587  # or as required
+
 EMAIL_USE_TLS = True
+
 EMAIL_HOST_USER = 'your_email@example.com'
+
 EMAIL_HOST_PASSWORD = 'your_password'
 
+
 4. Apply Migrations
+   
 Run the following commands to set up the database:
+
 python manage.py makemigrations
 python manage.py migrate
 
 5. Create a Superuser
+   
 Create an admin account for managing the system:
 python manage.py createsuperuser
 
-6. Run the Development Server
+
+6 Run the Development Server
+
 Start the development server:
+
 python manage.py runserver
 
-7. Access the Application
+7 Access the Application
 Open your browser and go to:
 http://127.0.0.1:8000
 
